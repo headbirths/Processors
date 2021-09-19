@@ -1,0 +1,82 @@
+# Use https://dreampuf.github.io/GraphvizOnline to generate image
+digraph G {
+node[shape=plaintext]
+S0 -> S1 -> S2 -> S3 ->S4 -> S5 -> S6 -> S7 -> S8 -> S9;
+
+node [shape=box]
+#compound=true;
+node [shape = record,height=.1];
+regbank[label = "<flags>FLAGS |<reg>R[0:15]|<regsp>SP|<pc>PC|<hold>HOLD"];
+CGEN;
+
+CACHE ;
+ARMUX [shape=polygon,sides=4,distortion=.2];
+BRMUX [shape=polygon,sides=4,distortion=.2];
+
+AMUX [shape=polygon,sides=4,distortion=.2];
+BMUX [shape=polygon,sides=4,distortion=.2];
+CMUX [shape=polygon,sides=4,distortion=.2];
+LU1;
+ALU2 ;
+MOV;
+ALUMUX  [shape=polygon,sides=4,distortion=.2];
+    DEMUX  [shape=polygon,sides=4,distortion=-.3];
+    RAM;
+    CSR;
+    DMUX  [shape=polygon,sides=4,distortion=.2];
+    ADAD ;
+    BEGIN [shape=point];
+    END [shape=point];
+BEGINPC [shape=point];
+
+BEGIN -> regbank:reg;
+regbank:pc -> CACHE [label="paddr",color=red];
+CACHE -> CMUX [label="prdata",color="red"];
+CMUX -> ADAD [color="red"];
+regbank:reg -> ARMUX [ltail=cluster4];
+regbank:reg -> BRMUX [color="red"]; # ltail=cluster4,
+CGEN -> CMUX;
+ALUMUX ;
+LU1  -> ALUMUX;
+ALU2 -> ALUMUX ;
+MOV  -> ALUMUX [color="red"];
+ALUMUX -> END [color="red"];
+#END -> HOLD ;
+DEMUX -> RAM [color="red"];
+DEMUX -> CSR;
+RAM -> DMUX [color="red"];
+CSR -> DMUX;
+ARMUX -> AMUX;
+AMUX -> MOV [color="red"]; # ,lhead=cluster6];
+BMUX -> LU1 ;  
+AMUX -> ALU2 ;  # lhead=cluster6,
+BMUX -> ALU2 ;  # lhead=cluster6,
+BRMUX -> BMUX;
+ADAD -> BEGINPC -> regbank:pc;
+#ADAD -> ALUMUX;
+#ADAD -> FLAGSMUX -> regbank:flags;
+
+#"RAM*" -> CACHE;
+#SPI -> CACHE;
+#EEPROM -> SPI;
+
+BRMUX -> PREDEC -> ADAD [color="red"];
+ADAD -> POSTINC;
+POSTINC -> DEMUX [label="daddr",color="red"];
+DMUX -> END [label="drdata",color="red"];
+END -> BEGIN [color="red"];
+
+{ rank = same; S0; BEGIN; BEGINPC; }
+{ rank = same; S1; regbank; CGEN; }
+{ rank = same; S2; CACHE; }
+{ rank = same; S3; ARMUX; BRMUX; }
+{ rank = same; S4; AMUX; BMUX; CMUX; }
+{ rank = same; S5; ADAD }
+{ rank = same; S6; DEMUX; }
+{ rank = same; S7; RAM; CSR; MOV; ALU2; LU1; }
+{ rank = same; S8; DMUX; ALUMUX; }
+{ rank = same; S9; END}
+#{ rank = same; "dbus address"; ; }
+##"dbus address" -> "dbus decode" -> "dbus memory" -> "dbus mux";
+
+}
