@@ -93,6 +93,8 @@ Negotiating bus frequency: MCU can program internal register.
   
 Need to investigate capabilities of various MCUs - for being a slave; how fast etc.
   
+Extra CSN to allow expansion: FPGA SPI slaves? (including debug interface)
+  
   
   
 
