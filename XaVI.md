@@ -126,6 +126,8 @@ Clauses 1 and 2 allow the XaVI Foundation to make improvements to the architectu
 * Long combinatorial paths. Intel/Motorola. Capture (exception: integral conditional jump).
 * Debug interface. SPI. Digital Twin. PIC / programmable state machine. Fast: GHz.External SPI - choice of process.
 
+
+
 ## Abbreviations ##
 
 | Abbreviation | Description |
@@ -133,7 +135,33 @@ Clauses 1 and 2 allow the XaVI Foundation to make improvements to the architectu
 |VLIW|Very Long Instruction Word|
 
 
+## Advance Information for Compiler Developers ##
 
+XaVI is an Open Source (ISA and Verilog RTL) 16-bit CPU targetted for ultra-low power applications in analog/mixed-signal ICs (XVI for 16 and 'a' for analog). Functionally, it is comparable to the Texas Instruments MSP430 CPU which has code density and power consumption that is class-leading among 8- and 16-bit CPUs. Over 40 years after the introduction of 8-bit microprocessors, the only truly Open Source *tiny* CPU is the Intel 8051 which has significantly worse power consumption and code density than the MSP430. 
 
+XaVI is architected to be able to exploit some low-power techniques that, it is hoped, can reduce area, dynamic power and leakage by about 30%. This will be beneficial when applying XaVI to MSP430 microcontroller type applications. But it is hoped these benefits will help push XaVI into places previously considered too small for processors to exist; for example, as 'programmable state machines' in analog ICs. Top-end implementations might have 128Kbyte program and 128Kbyte data memory. But at the bottom end, it may have only 64 words of (writable) program memory and absolutely no data memory (reliant solely on its internal registers). 
+
+Note: there is the trade-off between minimizing dynamic (switching, CV^2) power and static (leakage) power. The target is for a balanced reduction, approprate for 'always-on' control hardware.
+
+It is possible to optimize CPU power consumption at many different levels, e.g.:
+1. Compiler usage (e.g. https://research-information.bris.ac.uk/en/studentTheses/inductive-logic-programming-for-compiler-tuning)
+2. Compiler/hardware optimization (e.g. https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-129.pdf).
+3. Hardware architecture.
+4. Gate-level (e.g. use of HVT cells to minimize leakage).
+5. Transistor-level (e.g. back-biasing).
+
+My interest is in minimization of area and power through level 3 'Hardware architecture' techniques. The target reductions by approx 30% are compared with conventional design implementations that already employ state-of-the-art low power techniques (e.g. clock and operand gating, adaptive/dynamic voltage/frequency scaling).
+
+With such a focus on low power, the architecture might hopefully be good candidate for other techniques, particularly at level 2. For example: XaVI 'external' instructions are 16 bits long. '0xFxxx' instructions specify a 12-bit prefix to the following instruction. Thus, internal 'uncompressed' instructions are 28 bits long (not the same as internal 'decoded instructions' that control the datapath and are longer still). The Huffman coding of 28-bit data into 16-bit words could be application-specific, based on analysis of example code for the target application.
+
+The Open Source XaVI CPU hardware is a by-product of the investigation into low-power techniques. For the purposes of quantifying the area and power benefits, a compiler is not actually necessary. But for the purposes of having an Open Source 'tiny' CPU, it is!
+
+One possibility to provide a route from C without the significant costs of compiler development is to compile C code to MSP430 and then translate assembly code across to XaVI. Obviously this would sacrifice code density and power savings.
+
+In February 2022, there will be:
+* A functional C model of XaVI (i.e. not cycle-accurate), for the purposes of developing a C compiler.
+* Documentation for mapping from MSP430 assembler to 28-bit XaVI instructions, for the purposes of developing an assembly code translator.
+
+It is thought that the development of a C compiler for XaVI might be a suitable student project (based on LLVM would be easiest). An assembly code translator (and assembler/linker) would be an easier project.
 
 
