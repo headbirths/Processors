@@ -135,6 +135,76 @@ Clauses 1 and 2 allow the XaVI Foundation to make improvements to the architectu
 |VLIW|Very Long Instruction Word|
 
 
+
+## MSP430 Addressing modes ##
+
+The MSP430 instruction set is very regular ('highly orthogonal'), dominated by 3 classes of instructions: unary, dyadic and branches.
+
+Key:
+- `ABC` is the opcode: _but note_ these are the _XaVI_ equivalent opcodes!
+- `#` is the number of 16-bit words
+
+
+### Unary operations ###
+
+| Opcode   |
+|-----|
+| RRC |
+| SWP |
+| RR  |
+| SXT |
+| PSH |
+| JSR |
+| RTI |
+
+| Ad1 |   | # | Form        |
+|-----|---|---|-------------|
+| 0   | 0 | 1 | ABC Rx      |
+| 0   | 1 | 2 | ABC @(n+Rx) |
+| 1   | 0 | 1 | ABC @Rx     |
+| 1   | 1 | 1 | ABC @Rx+    |
+
+### Dyadic operations ###
+
+| Opcode  |
+|---------|
+| MOV     |
+| ADD     |
+| ADC     |
+| SBC     |
+| SUB     |
+| CMP     |
+| BIT     |
+| ANN/CLR |
+| OR/SET  |
+| XOR     |
+| AND     |
+
+| Ad2 |   |   | # | Form                  |
+|-----|---|---|---|-----------------------|
+| 0   | 0 | 0 | 1 | ABC Rx , Ry           |
+| 0   | 0 | 1 | 2 | ABC Rx , @(n+Ry)      |
+| 0   | 1 | 0 | 1 | ABC Rx , @Ry          |
+| 0   | 1 | 1 | 1 | ABC Rx , @Ry+         |
+| 1   | 0 | 0 | 2 | ABC @(n+Rx) , Ry      |
+| 1   | 0 | 1 | 3 | ABC @(n+Rx) , @(n+Ry) |
+| 1   | 1 | 0 | 2 | ABC @(n+Rx) , @Ry     |
+| 1   | 1 | 1 | 2 | ABC @(n+Rx) , @Ry+    |
+
+### Branches ###
+
+| Opcode |
+|-----|
+| BNZ |
+| BRZ |
+| BNC |
+| BRC |
+| BRN |
+| BRP |
+| BRL |
+| BRA |
+
+
 ## Advance Information for Compiler Developers ##
 
 XaVI is an Open Source (ISA and Verilog RTL) 16-bit CPU targetted for ultra-low power applications in analog/mixed-signal ICs (XVI for 16 and 'a' for analog). Functionally, it is comparable to the Texas Instruments MSP430 CPU which has code density and power consumption that is class-leading among 8- and 16-bit CPUs. Over 40 years after the introduction of 8-bit microprocessors, the only truly Open Source *tiny* CPU is the Intel 8051 which has significantly worse power consumption and code density than the MSP430. 
